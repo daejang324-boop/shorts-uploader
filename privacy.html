@@ -69,6 +69,8 @@ th{color:var(--fg);font-weight:700}
 <p>메타가 댓글·메시지 알림(웹훅)을 보내는 주소와 승인 완료 안내 화면은 <b>Cloudflare Workers</b>에서 동작합니다.
 여기서 받은 알림은 운영자 컴퓨터로 전달하기 위해 최대 7일 동안만 임시로 보관하고 그 뒤 자동으로 지웁니다.
 메타 앱 시크릿은 서명 확인에만 쓰며 Cloudflare의 암호화된 비밀값 저장소에 둡니다.</p>
+<p>계정 주인이 만든 <b>링크 모음 페이지</b>(페이지 이름·소개·링크 블록의 제목·주소·그림)와 링크별 <b>클릭 수</b>도 Cloudflare에 둡니다.
+클릭 수는 숫자만 셉니다 — 누른 사람의 IP·기기·신원은 저장하지 않습니다.</p>
 </div>
 
 <h2>4. 어디에 쓰나</h2>
@@ -76,18 +78,31 @@ th{color:var(--fg);font-weight:700}
 <li>승인받은 계정에 콘텐츠를 올리고, 올린 게시물의 성과를 보는 데</li>
 <li>우리 게시물에 댓글로 정보를 요청한 사람에게 그 정보(예: 소개한 상품의 구매 링크)를 비공개 답장으로 한 번 보내는 데</li>
 <li>같은 사람에게 같은 답장을 다시 보내지 않도록 기록하는 데</li>
+<li>계정 주인이 켜 둔 경우, 비공개 답장 안의 버튼을 누른 사람에게만 그 사람이 계정을 팔로우하는지 확인해 알맞은 메시지(링크 또는 팔로우 안내)를 보내는 데 — 버튼을 누르기 전에는 확인하지 않습니다</li>
+<li>우리 계정에 먼저 DM·스토리 답장을 보낸 사람에게 그 메시지의 키워드에 맞는 답을 보내는 데(메타 정책상 24시간 안)</li>
+<li>계정 주인이 원할 때 우리 게시물 댓글에 짧은 공개 답글을 다는 데, 그리고 우리 게시물 댓글 이벤트의 당첨자를 무작위로 뽑는 데</li>
+<li>메시지 안 링크와 링크 모음 페이지의 클릭 수를 세어 계정 주인에게 보여 주는 데</li>
 </ul>
 <p>비공개 답장은 메타 정책대로 댓글 하나에 한 번, 댓글이 달린 뒤 7일 안에만 보냅니다. 요청하지 않은 사람에게 메시지를 보내지 않습니다.
 상품 링크에 제휴 수수료가 있으면 메시지 첫 부분에 그 사실을 밝힙니다.</p>
 
-<h2>5. 제3자 제공</h2>
-<p><b>제공하지 않습니다.</b> 판매·공유·광고 목적의 활용이 없습니다. 데이터는 구글·메타 API, Cloudflare Workers, 운영자 컴퓨터 사이에서만 오갑니다.</p>
+<h2>5. 제3자 제공과 처리 위탁</h2>
+<p><b>제3자에게 판매·제공하지 않으며</b> 광고 목적으로 쓰지 않습니다. 서비스를 돌리기 위해 아래 업체에 처리를 맡깁니다.</p>
+<ul>
+<li><b>Cloudflare</b> — 웹훅 수신, 승인 완료 화면, 링크 모음 페이지, 클릭 수 집계(위 3항)</li>
+<li><b>Google (Gemini API)</b> — 계정 주인이 «말로 설정»에 적은 명령 문장을 자동화 설정으로 바꾸는 데. 명령 문장과 게시물 날짜·종류만 보내며,
+인스타그램·스레드 사용자(댓글·메시지를 보낸 사람)의 정보와 게시물 글은 보내지 않습니다</li>
+<li><b>TypeSafe (Jev)</b> — 같은 명령 문장에 보낼 내용·계정이 빠졌는지 판단하는 데(명령 문장과 계정 이름만)</li>
+</ul>
 
 <h2>6. 보관 기간</h2>
 <ul>
 <li>토큰과 계정 정보 — 계정 주인이 연결을 끊거나 운영이 끝날 때까지</li>
 <li>댓글·답장 기록 — 90일 뒤 자동 삭제</li>
 <li>웹훅 알림 원본 — 최대 7일</li>
+<li>자동화 설정과 발송·읽음 통계 — 계정 주인이 그 자동화를 지울 때까지</li>
+<li>링크 모음 페이지와 클릭 수 — 계정 주인이 페이지를 내릴 때까지</li>
+<li>댓글 추첨 결과 — 최근 100건까지</li>
 </ul>
 
 <h2>7. 삭제와 연결 끊기</h2>
@@ -138,7 +153,9 @@ left on those accounts' own posts. It is not a consumer app.</p>
 <p>Data is stored on the operator's computer; token files are restricted to the owner (mode 600). The webhook endpoint and the
 authorization-complete page run on Cloudflare Workers; webhook notifications are kept there temporarily for at most 7 days to be
 relayed to the operator's computer and are then deleted automatically. The Meta app secret is used only to verify signatures and is
-kept in Cloudflare's encrypted secret storage.</p>
+kept in Cloudflare's encrypted secret storage. The owner's link-in-bio page (page name, intro, link block titles, URLs and images)
+and per-link click counts are also kept on Cloudflare. Clicks are counted as numbers only; no IP address, device or identity of the
+person who clicks is stored.</p>
 
 <h2>4. Use</h2>
 <ul>
@@ -146,15 +163,26 @@ kept in Cloudflare's encrypted secret storage.</p>
 <li>Sending one private reply with the requested information (for example, the purchase link of a product introduced in the post)
 to a person who asked for it in a comment. Per Meta policy, at most one private reply per comment, within 7 days of the comment.
 Unsolicited messages are never sent. If a link earns an affiliate commission, the message says so at the beginning.</li>
+<li>When the owner turns it on, checking whether a person follows the account only after that person taps the button in the private
+reply, then sending the matching message (the link, or a request to follow). We do not check before the button is tapped.</li>
+<li>Replying to people who first sent the account a DM or story reply, matching the keywords of that message (within 24 hours, per Meta policy).</li>
+<li>Posting short public replies to comments on our posts when the owner asks, and drawing random winners of comment events on our posts.</li>
+<li>Counting clicks on links in messages and on the link-in-bio page and showing the counts to the owner.</li>
 </ul>
 
-<h2>5. Sharing</h2>
-<p>We never sell or share data with third parties or use it for advertising. Data moves only between Google/Meta APIs,
-Cloudflare Workers and the operator's computer.</p>
+<h2>5. Sharing and service providers</h2>
+<p>We never sell data to third parties or use it for advertising. These service providers process data to run the service:</p>
+<ul>
+<li><b>Cloudflare</b>: webhook endpoint, authorization-complete page, link-in-bio pages and click counting (see section 3).</li>
+<li><b>Google (Gemini API)</b>: turning the owner's natural-language setup command into automation settings. Only the command text and
+post dates/types are sent; no data about Instagram or Threads users (people who comment or message) and no post captions are sent.</li>
+<li><b>TypeSafe (Jev)</b>: checking whether that command is missing the content or account to use (command text and account names only).</li>
+</ul>
 
 <h2>6. Retention</h2>
 <p>Tokens and account data: until the owner disconnects or the service ends. Comment and reply logs: deleted after 90 days.
-Raw webhook notifications: at most 7 days.</p>
+Raw webhook notifications: at most 7 days. Automation settings and send/read statistics: until the owner deletes the automation.
+Link-in-bio pages and click counts: until the owner takes the page down. Comment draw results: the latest 100.</p>
 
 <h2>7. Deletion and disconnection</h2>
 <p>Google: revoke at <a href="https://myaccount.google.com/permissions">Google Account → Security → Third-party apps</a>.
